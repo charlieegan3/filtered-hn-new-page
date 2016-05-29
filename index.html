@@ -1,0 +1,109 @@
+<html>
+  <head>
+    <title>Filtered HN New</title>
+    <script>
+      function draw() {
+        document.getElementById("points").innerHTML = points.toString();
+        document.getElementById("comments").innerHTML = comments.toString();
+
+        var url = "https://hn.algolia.com/api/v1/search_by_date?tags=story&numericFilters=points=" + points.toString() + ",num_comments%3E" + comments.toString();
+        var request = new XMLHttpRequest();
+        request.open('GET', url, true);
+
+        request.onload = function() {
+            if (request.status >= 200 && request.status < 400) {
+                var data = JSON.parse(request.responseText);
+                var itemArea = document.getElementById("items");
+                itemArea.innerHTML = "";
+                for (i = 0; i < data.hits.length; i++) {
+                  var item = document.createElement("DIV");
+                  item.className = "item";
+                  var link = document.createElement("A");
+                  link.href = data.hits[i].url;
+                  link.innerHTML = data.hits[i].title;
+                  var meta = document.createElement("DIV");
+                  meta.innerHTML = "points: " + data.hits[i].points + " comments: " + data.hits[i].num_comments;
+
+                  item.appendChild(link);
+                  item.appendChild(meta);
+                  itemArea.appendChild(item);
+                }
+            }
+        };
+
+        request.onerror = function() {
+            console.log("There was an error getting the items.");
+        };
+
+        request.send();
+      }
+
+      function updateComments(value) {
+        comments += value;
+        window.location.href = getUrlWithoutParams() + "?comments=" + comments.toString() + "&points=" + points.toString();
+      }
+
+      function updatePoints(value) {
+        points += value;
+        window.location.href = getUrlWithoutParams() + "?comments=" + comments.toString() + "&points=" + points.toString();
+      }
+
+      function getURLParameter(name) {
+          return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+      }
+
+      function getUrlWithoutParams() {
+        return [location.protocol, '//', location.host, location.pathname].join('');
+      }
+
+      var comments = 0;
+      var points = 2;
+
+      if (getURLParameter("comments")) {
+        comments = parseInt(getURLParameter("comments"));
+      }
+
+      if (getURLParameter("points")) {
+        points = parseInt(getURLParameter("points"));
+      }
+
+    </script>
+    <style>
+      body {
+        font-family: Tahoma,Verdana,Segoe,sans-serif;
+        font-size: 0.8em;
+      }
+      .button {
+        display: inline-block;
+        border: 2px solid CornFlowerBlue;
+        cursor: pointer;
+        width: 16px;
+        text-align: center;
+        border-radius: 2px;
+      }
+      #points, #comments {
+        font-weight: bold;
+      }
+      .item {
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+  <body onload="draw()">
+    <p>
+      This page lists items from the
+      <a href="https://news.ycombinator.com/newest">new page</a> with
+      <a class="button" onclick="updatePoints(1)">+</a>
+      <span id="points"></span>
+      <a class="button" onclick="updatePoints(-1)">-</a>
+      points and over
+      <a class="button" onclick="updateComments(1)">+</a>
+      <span id="comments"></span>
+      <a class="button" onclick="updateComments(-1)">-</a>
+      comments.
+
+      <div id="items"></div>
+    </p>
+  </body>
+</html>
+
