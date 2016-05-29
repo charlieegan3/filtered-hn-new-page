@@ -28,7 +28,11 @@
 
                   link.innerHTML = data.hits[i].title;
                   var meta = document.createElement("DIV");
-                  meta.innerHTML = "points: " + data.hits[i].points + " comments: " + data.hits[i].num_comments;
+                  meta.innerHTML = "+" + data.hits[i].points + " ";
+                  var comment_link = document.createElement("A");
+                  comment_link.href = "https://news.ycombinator.com/item?id=" + data.hits[i].objectID;
+                  comment_link.innerHTML = "comments (" + data.hits[i].num_comments + ")";
+                  meta.appendChild(comment_link);
 
                   item.appendChild(link);
                   item.appendChild(meta);
