@@ -19,7 +19,12 @@
                   var item = document.createElement("DIV");
                   item.className = "item";
                   var link = document.createElement("A");
-                  link.href = data.hits[i].url;
+                  if (data.hits[i].url) {
+                    link.href = data.hits[i].url;
+                  } else {
+                    link.href = "https://news.ycombinator.com/item?id=" + data.hits[i].objectID;
+                  }
+
                   link.innerHTML = data.hits[i].title;
                   var meta = document.createElement("DIV");
                   meta.innerHTML = "points: " + data.hits[i].points + " comments: " + data.hits[i].num_comments;
